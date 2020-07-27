@@ -19,18 +19,18 @@ mongo = PyMongo(app)
 # configuration
 DEBUG = True
 app.config.from_object(__name__)
-app.url_map.strict_slashes = False
+app.url_map.strict_slashes = False #ignore trailing slashes
 
 # enable CORS
 CORS(app, resources={r'/*': {'origins': '*'}})
 
-
+#sanity check page
 @app.route('/')
 def hello_world():
     return render_template('index.html')
 
-
-@app.route('/accounts', methods=['GET', 'POST'])    ##Deprecated, use signup instead!
+##Deprecated, use signup and login instead!
+@app.route('/accounts', methods=['GET', 'POST'])    
 def accounts():
     if request.method=='GET':
         username = request.args.get('username')
@@ -49,14 +49,22 @@ def accounts():
         mongo.db.Accounts.insert_one(data)
         return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
-@app.route('/signup', methods=['POST'])    ##
+#signs up a user. The request data should be a json containing
+#the user's username and password.
+@app.route('/signup', methods=['POST'])    
 def signup(): 
-    data=request.get_json()     #TODO Add check if account with requested username exists!!!
-    data['created']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
-    data['modified']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
-    mongo.db.Accounts.insert_one(data)
-    return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+    data=request.get_json()
+    account=list(mongo.db.Accounts.find({'username': data['username']}))
+    if account==[]:
+        data['created']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
+        data['modified']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
+        mongo.db.Accounts.insert_one(data)
+        return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+    else:
+        return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
 
+#logs in a user. The request should contain the user's
+#username and password.
 @app.route('/login',methods=['POST'])
 def login():
     data=request.get_json()  
@@ -69,6 +77,8 @@ def login():
             return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
     return json.dumps({'success':False}), 403, {'ContentType':'application/json'}     
 
+#changes a user's password. The request should contain the user's
+#username, old password (oldPassword) and new password (newPassword)
 @app.route('/changePassword',methods=['POST'])
 def changePassword():
     data=request.get_json()  
@@ -81,7 +91,10 @@ def changePassword():
             return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
     return json.dumps({'success':False}), 403, {'ContentType':'application/json'} 
 
-@app.route('/studies') ##deprecated, only for administrative use(?)
+#Returns all studies (condition-drugs entries) for a certain drug or certain 
+# condition, or all studies if unspecified.
+##deprecated, only for administrative use!
+@app.route('/studies') 
 def studies():
     condition = request.args.get('condition')
     drug = request.args.get('drug')
@@ -95,7 +108,8 @@ def studies():
         accounts = list(mongo.db.Studies.find())
         return json.dumps(accounts, default=str)
 
-
+#returns all drugs used for a given condition sorted by the
+#number of studies they were used in.
 @app.route('/condition') ##main functionality
 def condition():
 	condition=request.args.get('condition')
@@ -104,7 +118,8 @@ def condition():
 	#pprint(sortedResults)
 	return json.dumps(sortedResults,default=str)
 
-
+#Returns a list with an amount of conditions specified by size and offset by page.
+#The conditions are not sorted.
 @app.route('/conditionlist')
 def conditionlist():
     page=int(request.args.get('page'))      ##TODO add try-catch failsafes!
@@ -117,7 +132,8 @@ def conditionlist():
     return json.dumps(conditions,default=str)
 
 
-
+#Main score handling endpoint. Returns all scores of a user, all scores
+#on a condition, or all scores.
 @app.route('/scores' ,methods=['GET', 'POST'])
 def scores():
     if request.method=='GET':
@@ -130,7 +146,7 @@ def scores():
             conditions = list(mongo.db.Scores.find({"condition": condition}))
             return json.dumps(conditions, default=str)
         else:
-            accounts = list(mongo.db.Scores.find())
+            accounts = list(mongo.db.Scores.find()) ##TODO: return in descending order?
             return json.dumps(accounts, default=str)
     elif request.method=='POST':
         data=request.get_json()
