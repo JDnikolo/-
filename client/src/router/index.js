@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import page from '../components/page.vue';
+import scoreboard from '../components/scoreboard.vue';
+import core from '../components/core.vue';
 
 Vue.use(VueRouter);
 
@@ -9,7 +10,12 @@ const routes = [
   {
     path: '/page',
     name: 'page',
-    component: page,
+    component: core,
+  },
+  {
+    path: '/scores',
+    name: 'scoreboard',
+    component: scoreboard,
   },
 ];
 

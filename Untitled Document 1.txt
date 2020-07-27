@@ -10,7 +10,7 @@ db import/export:
 mongoimport -d local -c Studies /tmp/Studies.json
 mongoexport -d local -c Studies --out=/tmp/Studies.json
 copy from container to host:
-docker cp base:/tmp/Studies.json /tmp/Studies.json
+docker cp base:/tmp/Studies.json E:\Giannis Nikolopoulos\Ergasia
 
 access mongo docker
 docker exec -it base /bin/bash
