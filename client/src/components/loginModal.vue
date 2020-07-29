@@ -2,10 +2,13 @@
   <div class="modal-backdrop">
     <div class="modal">
       <header class="modal-header" v-show="login">
-          Login
+          Login:
       </header>
-      <section class="modal-body">
-          <form v-show="login" v-on:submit.prevent="onSubmit" v-on:submit='logMeIn'>
+      <header class="modal-header" v-show="!login">
+          Sign up:
+      </header>
+      <section class="modal-body" v-show="login">
+          <form  v-on:submit.prevent="onSubmit" v-on:submit='logMeIn'>
               <label>Username:</label>
               <input type='text' v-bind:value="user" v-on:input="user = $event.target.value" />
               <br />
@@ -15,10 +18,26 @@
               <button type="submit" @click="logMeIn">Login</button>
           </form>
           <span>{{warning}}</span>
+          <div v-show='login'>
+              Not a member?<a href="url" @click.prevent='login=!login'> Sign up here!</a>
+              </div>
+        </section>
+        <section class="modal-body" v-show="!login">
+          <form  v-on:submit.prevent="onSubmit" v-on:submit='signMeUp'>
+              <label>Username:</label>
+              <input type='text' v-bind:value="user" v-on:input="user = $event.target.value" />
+              <br />
+              <label>Password:</label>
+              <input type='password' v-bind:value="pass" v-on:input="pass = $event.target.value"/>
+              <br />
+              <button type="submit" @click="logMeIn">Login</button>
+          </form>
+          <span>{{warning}}</span>
+          <div v-show='!login'>
+              Already a member?<a href="url" @click.prevent='login=!login'> Login here!</a>
+              </div>
         </section>
        <footer class="modal-footer">
-        I'm the default footer!
-
         <button type="button" class="btn-green" @click="close">
             Close me!
         </button>
@@ -58,6 +77,8 @@ export default {
           this.warning = 'Invalid username or password!';
         }
       });
+    },
+    signMeUp() {
     },
   },
 };

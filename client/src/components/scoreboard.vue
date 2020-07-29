@@ -14,7 +14,7 @@
         <tr v-for="scores in something" :key="scores">
               <td>{{ scores.username }}</td>
               <td>{{ scores.condition }}</td>
-              <td>{{ scores.result }}</td>
+              <td>{{ scores.result.toFixed(2) }}</td>
       </tr>
     </table>
     </div>

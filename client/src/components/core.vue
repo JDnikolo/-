@@ -2,7 +2,13 @@
   <div id="app">
     <div id="login">
       <span>{{loginMessage}}</span>
-      <button type="button" @click="showLogin">Log in!</button>
+      <span v-show='!isLoggedin'>
+        <button type="button" @click="showLogin" >Log in!</button>
+      </span>
+      <span v-show='isLoggedin'>
+        <button v-on:click='logout'>Logout</button>
+        <button>Change Password</button>
+      </span>
     </div>
     <div class="textbox">
       <form v-on:submit.prevent="onSubmit" v-on:submit:=find>
@@ -34,18 +40,23 @@
         <br />
         <input type="text" v:bind:value="guess" v-on:input="guess = $event.target.value" />
         <button type="submit" v-on:click=reveal>Take the guess</button>
+        <button type='button' v-on:click=logScore>I give up! Log my score.</button>
       </form>
       <table id='revealed'>
         <thead>
-          <th> Found: {{this.found}} - Remaining: {{this.total - this.found}} </th>
+          <th> Found: {{this.found}} - Remaining: {{this.total - this.found}}</th>
+          <th>Score: {{(this.found / this.total * 100).toFixed(2)}}%</th>
         </thead>
+        <tr v-show="gameMessage != ''">
+          <span> {{gameMessage}} </span>
+        </tr>
         <tbody name='fade' is='transition-group'>
           <tr v-for="vendetta in revealed" :key="vendetta._id">
             {{vendetta._id}} - {{vendetta.count}}
           </tr>
         </tbody>
       </table>
-      <th> Remaining: {{this.total - this.found}}: </th>
+      <th> Remaining: {{this.total - this.found}}</th>
       <table id='remaining'>
         <tr v-for="vendetta in pool" :key="vendetta._id">
             ??? - {{vendetta.count}}
@@ -71,13 +82,15 @@ export default {
       condition: '',
       guess: '',
       pool: '',
-      revealed: '',
+      revealed: [],
       total: 0,
       found: 0,
       showResults: '',
       showGame: '',
       isLoginVisible: false,
       loginMessage: 'You are not logged in.',
+      isLoggedin: false,
+      gameMessage: '',
     };
   },
   methods: {
@@ -116,11 +129,8 @@ export default {
       this.guess = '';
     },
     reveal() {
-      let removed;
+      let removed = [];
       let i;
-      if (this.revealed === '') {
-        this.revealed = [];
-      }
       if (this.guess.length > 2) {
         for (i = 0; i < this.pool.length; i += 1) {
           // eslint-disable-next-line
@@ -131,7 +141,11 @@ export default {
             this.revealed.push(removed[0]);
             this.revealed.reverse();
             this.found += removed[0].count;
+            this.showGameMessage({ type: 'guess', result: 'success' });
           }
+        }
+        if (removed.length === 0) {
+          this.showGameMessage({ type: 'guess', result: 'failure' });
         }
       }
     },
@@ -139,19 +153,56 @@ export default {
       this.isLoginVisible = true;
     },
     hideLogin() {
-      // eslint-disable-next-line
-      console.log('Changing Name?')
       if (localStorage.user) {
         this.loginMessage = `Welcome, ${localStorage.user}!`;
-        // eslint-disable-next-line
-        console.log('New name'+ localStorage.user)
+        this.isLoggedin = true;
       }
       this.isLoginVisible = false;
+    },
+    logout() {
+      localStorage.clear();
+      this.isLoggedin = false;
+      this.loginMessage = 'You are not logged in.';
+    },
+    logScore() {
+      if (this.isLoggedin) {
+        const payload = JSON.parse(`{"condition": "${this.condition}", "username": "${localStorage.user}", "result": ${(this.found / this.total) * 100}}`);
+        const path = 'http://localhost:5000/scores';
+        axios.post(path, payload).then((res) => {
+          if (res.data.success === true) {
+            this.showGameMessage({ type: 'scoring', result: 'success' });
+          }
+        }).catch(() => {
+          this.showGameMessage({ type: 'scoring', result: 'failure' });
+        });
+      }
+    },
+    showGameMessage(something) {
+      const successMessages = ['Good guess!', "That's it!", 'Well done!'];
+      const failureMessages = ["Nope, that's not it.", 'Try again!'];
+      if (something.type === 'scoring') {
+        if (something.result === 'success') {
+          this.gameMessage = 'Score posted successfully!';
+        } else {
+          this.gameMessage = 'Score posting failed, try again later.';
+        }
+      } else if (something.type === 'guess') {
+        if (something.result === 'success') {
+          this.gameMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
+        } else {
+          this.gameMessage = failureMessages[Math.floor(Math.random() * failureMessages.length)];
+        }
+      }
+      setTimeout(() => { this.gameMessage = ''; }, 2000);
     },
   },
   created() {
     this.showResults = false;
     this.showGame = false;
+    if (localStorage.user) {
+      this.loginMessage = `Welcome, ${localStorage.user}!`;
+      this.isLoggedin = true;
+    }
   },
 };
 </script>
