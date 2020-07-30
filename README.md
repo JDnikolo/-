@@ -14,10 +14,10 @@
 
 http://147.102.19.19/wordpress/%ce%bf%ce%b4%ce%b7%ce%b3%ce%af%ce%b5%cf%82-%cf%83%cf%85%ce%bc%ce%bc%ce%b5%cf%84%ce%bf%cf%87%ce%ae%cf%82/
 
-[ ] CSS
-[x] Installation/Deployment
-[ ] Presentation
-[ ] Video
+-[ ] CSS   
+-[x] Installation/Deployment   
+-[ ] Presentation   
+-[ ] Video   
 
 
 ## Deployment
