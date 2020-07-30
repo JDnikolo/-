@@ -48,7 +48,7 @@ Start the mongoDB container:
 Activate the virtual environment and run the Flask server file:   
 ~~~
     source ./env/Scripts/activate   
-    python app.py   
+    python ./env/app.py   
 ~~~
 *Note"*: make sure you run the file using python 3.\*.   
 
