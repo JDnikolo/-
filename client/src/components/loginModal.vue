@@ -8,14 +8,14 @@
           Sign up:
       </header>
       <section class="modal-body" v-show="login">
-          <form  v-on:submit.prevent="onSubmit" v-on:submit='logMeIn'>
+          <form  v-on:submit.prevent='logMeIn'>
               <label>Username:</label>
               <input type='text' v-bind:value="user" v-on:input="user = $event.target.value" />
               <br />
               <label>Password:</label>
               <input type='password' v-bind:value="pass" v-on:input="pass = $event.target.value"/>
               <br />
-              <button type="submit" @click="logMeIn">Login</button>
+              <button type="submit">Login</button>
           </form>
           <span>{{warning}}</span>
           <div v-show='login'>
@@ -23,14 +23,14 @@
               </div>
         </section>
         <section class="modal-body" v-show="!login">
-          <form  v-on:submit.prevent="onSubmit" v-on:submit='signMeUp'>
+          <form  v-on:submit.prevent="onSubmit">
               <label>Username:</label>
               <input type='text' v-bind:value="user" v-on:input="user = $event.target.value" />
               <br />
               <label>Password:</label>
               <input type='password' v-bind:value="pass" v-on:input="pass = $event.target.value"/>
               <br />
-              <button type="submit" @click="logMeIn">Login</button>
+              <button type="submit" @click="signMeUp">Sign up!</button>
           </form>
           <span>{{warning}}</span>
           <div v-show='!login'>
@@ -68,7 +68,7 @@ export default {
       const path = 'http://localhost:5000/login';
       this.warning = '';
       axios.post(path, payload).then((res) => {
-        if (res.data.success === true) {
+        if (res.data.success) {
           localStorage.user = payload.username;
           this.close();
         }
@@ -79,6 +79,22 @@ export default {
       });
     },
     signMeUp() {
+      const payload = JSON.parse(`{"username": "${this.user}", "password": "${this.pass}"}`);
+      const path = 'http://localhost:5000/signup';
+      this.warning = '';
+      axios.post(path, payload).then((res) => {
+        if (res.data.success) {
+          localStorage.user = payload.username;
+          this.warning = 'Signed up successfully! You are now logged in.';
+          setTimeout(() => { this.warning = ''; }, 2000);
+          setTimeout(() => { this.close(); }, 2000);
+        }
+      }).catch((error) => {
+        if (error.response) {
+          this.warning = 'Username is already in use.';
+          setTimeout(() => { this.warning = ''; }, 5000);
+        }
+      });
     },
   },
 };

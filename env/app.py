@@ -43,7 +43,7 @@ def accounts():
             accounts = list(mongo.db.Accounts.find())
             return json.dumps(accounts, default=str)
     elif request.method=='POST':  
-        data=request.get_json()     #TODO Add check if account with requested username exists!!!
+        data=request.get_json() 
         data['created']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
         data['modified']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
         mongo.db.Accounts.insert_one(data)
@@ -93,7 +93,7 @@ def changePassword():
 
 #Returns all studies (condition-drugs entries) for a certain drug or certain 
 # condition, or all studies if unspecified.
-##deprecated, only for administrative use!
+##deprecated, only for administrative use! Use conditionList instead.
 @app.route('/studies') 
 def studies():
     condition = request.args.get('condition')
@@ -122,12 +122,16 @@ def condition():
 #The conditions are not sorted.
 @app.route('/conditionlist')
 def conditionlist():
-    page=int(request.args.get('page'))      ##TODO add try-catch failsafes!
-    size=int(request.args.get('size'))
+    try:
+        page=int(request.args.get('page'))
+        size=int(request.args.get('size'))
+    except TypeError:
+        size=56750
+        page=0
     if page==None:
         page=0
     if size==None:
-        size=0
+        size=56750
     conditions=(list(mongo.db.Studies.aggregate([{"$group":{"_id":"$condition"}},{"$project":{"_id":0,"condition":"$_id"}},{ "$skip": page*size },{ "$limit": size}])))
     return json.dumps(conditions,default=str)
 
@@ -146,7 +150,7 @@ def scores():
             conditions = list(mongo.db.Scores.find({"condition": condition}))
             return json.dumps(conditions, default=str)
         else:
-            accounts = list(mongo.db.Scores.find()) ##TODO: return in descending order?
+            accounts = list(mongo.db.Scores.find())
             return json.dumps(accounts, default=str)
     elif request.method=='POST':
         data=request.get_json()

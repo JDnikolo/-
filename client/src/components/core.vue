@@ -1,32 +1,34 @@
 <template>
-  <div id="app">
-    <div id="login">
+  <div id="app" class='outside'>
+    <header id="login" class="header">
       <span>{{loginMessage}}</span>
       <span v-show='!isLoggedin'>
         <button type="button" @click="showLogin" >Log in!</button>
       </span>
       <span v-show='isLoggedin'>
         <button v-on:click='logout'>Logout</button>
-        <button>Change Password</button>
+        <button @click=showPass>Change Password</button>
       </span>
-    </div>
-    <div class="textbox">
-      <form v-on:submit.prevent="onSubmit" v-on:submit:=find>
+    </header>
+    <section>
+    <div class="container">
+      <form v-on:submit.prevent=find>
         <label>Search for a condition:</label>
         <br />
         <input v-bind:value="condition"
   v-on:input="condition = $event.target.value" type="text" />
+        <button type="button" @click=random>Random Condition</button>
         <br />
         <button type="submit" v-on:click=find>Show top 100</button>
         <button type="button" v-on:click=gameSetup>Give me a game</button>
       </form>
     </div>
     <div v-show='showResults' id="results" >
-      <table v-show='showResults' id="scores">
-        <tr>
+      <table class="table" v-show='showResults' id="scores">
+        <thead class='tablehead'>
           <th>Drug Name</th>
           <th>Studies</th>
-        </tr>
+        </thead>
         <tr></tr>
         <tr v-for="result in results" :key="result">
           <td>{{ result._id }}</td>
@@ -35,20 +37,21 @@
       </table>
     </div>
     <div id='game' v-show="showGame">
-      <form class="textbox" v-on:submit.prevent="onSubmit" v-on:submit:=reveal>
+      <form class="container" v-on:submit.prevent=reveal>
         <label>Your guess:</label>
         <br />
         <input type="text" v:bind:value="guess" v-on:input="guess = $event.target.value" />
-        <button type="submit" v-on:click=reveal>Take the guess</button>
-        <button type='button' v-on:click=logScore>I give up! Log my score.</button>
+        <button type="submit">Take the guess</button>
+        <button type='button' v-on:click=closeGame>I give up!</button>
+        <br />
+        <span> {{gameMessage}} </span>
       </form>
-      <table id='revealed'>
-        <thead>
+      <table class="table" id='revealed'>
+        <thead class='tablehead'>
           <th> Found: {{this.found}} - Remaining: {{this.total - this.found}}</th>
           <th>Score: {{(this.found / this.total * 100).toFixed(2)}}%</th>
         </thead>
-        <tr v-show="gameMessage != ''">
-          <span> {{gameMessage}} </span>
+        <tr>
         </tr>
         <tbody name='fade' is='transition-group'>
           <tr v-for="vendetta in revealed" :key="vendetta._id">
@@ -56,25 +59,51 @@
           </tr>
         </tbody>
       </table>
-      <th> Remaining: {{this.total - this.found}}</th>
-      <table id='remaining'>
+      <table id='remaining' class="table">
+        <th> Remaining: {{this.total - this.found}}</th>
         <tr v-for="vendetta in pool" :key="vendetta._id">
             ??? - {{vendetta.count}}
         </tr>
       </table>
     </div>
+    <div class="container" id="Game End" v-show="showEnd">
+      <table>
+        <tr>
+          <td> Final Score = {{(this.found / this.total * 100).toFixed(2)}}%
+            <button type="button" @click=logScore>Submit my score!</button></td>
+        </tr>
+        <tr> <span> {{gameMessage}} </span>
+        </tr>
+        <tr>
+          <table id='revealed'>
+            <thead class='tablehead'>
+              <th> Found: {{this.found}} - Remaining: {{this.total - this.found}}</th>
+            </thead>
+            <tbody name='fade' is='transition-group'>
+              <tr v-for="vendetta in revealed" :key="vendetta._id">
+                {{vendetta._id}} - {{vendetta.count}}
+              </tr>
+            </tbody>
+          </table>
+        </tr>
+      </table>
+    </div>
+    </section>
     <loginModal v-show="isLoginVisible" @close="hideLogin" />
+    <changePasswordModal v-show='isPassVisible' @close=hidePass />
+    <footer>Footer</footer>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
 import loginModal from './loginModal.vue';
+import changePasswordModal from './changePasswordModal.vue';
 
 export default {
   name: 'main_page',
   components: {
-    loginModal,
+    loginModal, changePasswordModal,
   },
   data() {
     return {
@@ -85,29 +114,33 @@ export default {
       revealed: [],
       total: 0,
       found: 0,
-      showResults: '',
-      showGame: '',
+      showResults: false,
+      showGame: false,
+      showEnd: false,
       isLoginVisible: false,
+      isPassVisible: false,
       loginMessage: 'You are not logged in.',
       isLoggedin: false,
       gameMessage: '',
+      scorePosted: false,
     };
   },
   methods: {
     find() {
-      this.showResults = true;
+      this.showEnd = false;
       this.showGame = false; // TODO: check if a game is being interrupted.
       this.reset();
       const path = `http://localhost:5000/condition?condition=${this.condition}`;
       axios.get(path).then((res) => {
         this.results = res.data.slice(0, 100);
+        this.showResults = true;
       });
     },
     gameSetup() {
       let i;
       // TODO: something in case the list is empty
+      this.showEnd = false;
       this.showResults = false;
-      this.showGame = true;
       this.reset();
       const path = `http://localhost:5000/condition?condition=${this.condition}`;
       axios.get(path).then((res) => {
@@ -119,9 +152,11 @@ export default {
         } else {
         // Error Message
         }
+        this.showGame = true;
       });
     },
     reset() {
+      this.scorePosted = false;
       this.total = 0;
       this.found = 0;
       this.pool = [];
@@ -149,6 +184,12 @@ export default {
         }
       }
     },
+    showPass() {
+      this.isPassVisible = true;
+    },
+    hidePass() {
+      this.isPassVisible = false;
+    },
     showLogin() {
       this.isLoginVisible = true;
     },
@@ -164,17 +205,29 @@ export default {
       this.isLoggedin = false;
       this.loginMessage = 'You are not logged in.';
     },
+    closeGame() {
+      this.showGame = false;
+      this.showEnd = true;
+    },
     logScore() {
-      if (this.isLoggedin) {
-        const payload = JSON.parse(`{"condition": "${this.condition}", "username": "${localStorage.user}", "result": ${(this.found / this.total) * 100}}`);
-        const path = 'http://localhost:5000/scores';
-        axios.post(path, payload).then((res) => {
-          if (res.data.success === true) {
-            this.showGameMessage({ type: 'scoring', result: 'success' });
-          }
-        }).catch(() => {
-          this.showGameMessage({ type: 'scoring', result: 'failure' });
-        });
+      if (!this.scorePosted) {
+        if (this.isLoggedin) {
+          const payload = JSON.parse(`{"condition": "${this.condition}", "username": "${localStorage.user}", "result": ${(this.found / this.total) * 100}}`);
+          const path = 'http://localhost:5000/scores';
+          axios.post(path, payload).then((res) => {
+            if (res.data.success === true) {
+              this.showGameMessage({ type: 'scoring', result: 'success' });
+              this.scorePosted = true;
+            }
+          }).catch(() => {
+            this.showGameMessage({ type: 'scoring', result: 'failure' });
+          });
+        } else {
+          this.gameMessage = 'You must be logged in to submit your score!';
+          setTimeout(() => { this.showLogin(); }, 2000);
+        }
+      } else {
+        this.gameMessage = "You've already submitted this score. Time for a new one!";
       }
     },
     showGameMessage(something) {
@@ -194,6 +247,22 @@ export default {
         }
       }
       setTimeout(() => { this.gameMessage = ''; }, 2000);
+    },
+    random() {
+      this.reset();
+      this.showGame = false;
+      this.showEnd = false;
+      this.showResults = false;
+      const page = Math.floor(Math.random() * 56750);
+      // 56750: total number of conditions in base currently.
+      const path = `http://localhost:5000/conditionlist?page=${page}&size=1`;
+      axios.get(path).then((res) => {
+        this.condition = res.data[0].condition;
+      }).catch((error) => {
+        if (error.request) {
+          this.condition = 'Lupus';
+        }
+      });
     },
   },
   created() {
@@ -216,9 +285,35 @@ export default {
     transform: translateY(30px);
   }
 
-  .textbox{
-    width: 50%;
+  .table{
+    width:90%;
+    margin: auto;
+    text-align: center;
+    border-style:dashed;
+    border-width: 2px;
+  }
+  .tablehead{
+    border-bottom-style: double;
+    border-bottom-width: 1px;
+  }
+  .container{
+    margin: auto;
+    text-align: center;
+    width: 80%;
     border-style:groove;
-    border-width: 5px;
+    border-width: 2px;
+  }
+  .outside{
+    margin:30px;
+  }
+  .header{
+    background:white;
+    border-bottom: 1px solid #eeeeee;
+    position:fixed;
+    left:0;
+    top:0;
+    width:100vw;
+    z-index:200;
+    height:auto;
   }
 </style>
