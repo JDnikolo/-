@@ -35,6 +35,10 @@ Access the container and import the collection to the database:
 ~~~
 *Optional*: Import the Accounts and Scores collections from their respective JSON files.   
 
+Start the mongoDB container:
+~~~
+  docker start base
+~~~
 Activate the virtual environment and run the Flask server file:   
 ~~~
     source ./env/Scripts/activate   
