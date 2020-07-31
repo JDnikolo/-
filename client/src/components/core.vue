@@ -10,72 +10,70 @@
         <button @click=showPass>Change Password</button>
       </span>
     </header>
-    <section>
     <div class="container">
       <form v-on:submit.prevent=find>
         <label>Search for a condition:</label>
         <br />
-        <input v-bind:value="condition"
+        <input id='gameForm' v-bind:value="condition"
   v-on:input="condition = $event.target.value" type="text" />
-        <button type="button" @click=random>Random Condition</button>
+        <button id='formButton' type="button" @click=random>Random Condition</button>
         <br />
-        <button type="submit" v-on:click=find>Show top 100</button>
-        <button type="button" v-on:click=gameSetup>Give me a game</button>
+        <button id='formButton' type="submit" v-on:click=find>Show top 100</button>
+        <button id='formButton' type="button" v-on:click=gameSetup>Give me a game</button>
       </form>
     </div>
     <div v-show='showResults' id="results" >
       <table class="table" v-show='showResults' id="scores">
-        <thead class='tablehead'>
+        <thead>
           <th>Drug Name</th>
           <th>Studies</th>
         </thead>
-        <tr></tr>
+        <tbody>
         <tr v-for="result in results" :key="result">
           <td>{{ result._id }}</td>
           <td>{{ result.count }}</td>
         </tr>
+        </tbody>
       </table>
     </div>
     <div id='game' v-show="showGame">
-      <form class="container" v-on:submit.prevent=reveal>
+      <form id="guess" class="container" v-on:submit.prevent=reveal>
         <label>Your guess:</label>
         <br />
-        <input type="text" v:bind:value="guess" v-on:input="guess = $event.target.value" />
-        <button type="submit">Take the guess</button>
-        <button type='button' v-on:click=closeGame>I give up!</button>
+        <input id='gameForm' type="text" v:bind:value="guess"
+        v-on:input="guess = $event.target.value" />
+        <button id="gameButton" type="submit">Take the guess</button>
+        <button id="gameButton" type='button' v-on:click=closeGame>I give up!</button>
         <br />
-        <span> {{gameMessage}} </span>
       </form>
+      <div class='alert'> {{gameMessage}} </div>
+      <div id="gameStats" class="container">
+        <span>Found: {{this.found}} - Remaining: {{this.total - this.found}}</span>
+        <br />
+        <span>Score: {{(this.found / this.total * 100).toFixed(2)}}% </span>
+      </div>
       <table class="table" id='revealed'>
-        <thead class='tablehead'>
-          <th> Found: {{this.found}} - Remaining: {{this.total - this.found}}</th>
-          <th>Score: {{(this.found / this.total * 100).toFixed(2)}}%</th>
-        </thead>
-        <tr>
-        </tr>
-        <tbody name='fade' is='transition-group'>
+        <transition-group name='fade'>
           <tr v-for="vendetta in revealed" :key="vendetta._id">
             {{vendetta._id}} - {{vendetta.count}}
           </tr>
-        </tbody>
+        </transition-group>
       </table>
       <table id='remaining' class="table">
-        <th> Remaining: {{this.total - this.found}}</th>
         <tr v-for="vendetta in pool" :key="vendetta._id">
             ??? - {{vendetta.count}}
         </tr>
       </table>
     </div>
-    <div class="container" id="Game End" v-show="showEnd">
-      <table>
-        <tr>
-          <td> Final Score = {{(this.found / this.total * 100).toFixed(2)}}%
-            <button type="button" @click=logScore>Submit my score!</button></td>
-        </tr>
-        <tr> <span> {{gameMessage}} </span>
-        </tr>
-        <tr>
-          <table id='revealed'>
+    <div id="Game End" v-show="showEnd">
+      <div id='gameStats' class='container'>
+      Final Score = {{(this.found / this.total * 100).toFixed(2)}}%
+      <br />
+      <button id="gameButton" type="button" @click=logScore>Submit my score!</button>
+      <br />
+      <span> {{gameMessage}} </span>
+      </div>
+          <table id='revealed' class="table">
             <thead class='tablehead'>
               <th> Found: {{this.found}} - Remaining: {{this.total - this.found}}</th>
             </thead>
@@ -84,14 +82,18 @@
                 {{vendetta._id}} - {{vendetta.count}}
               </tr>
             </tbody>
-          </table>
-        </tr>
-      </table>
+           </table>
     </div>
-    </section>
     <loginModal v-show="isLoginVisible" @close="hideLogin" />
     <changePasswordModal v-show='isPassVisible' @close=hidePass />
-    <footer>Footer</footer>
+    <footer>Font:
+      <a href="https://fonts.google.com/specimen/Jura?subset=greek#standard-styles">Jura</a>
+      , Designed by Daniel Johnson, Cyreal
+      <br />
+      <a href="https://vuejs.org/">Vue'd</a>
+      through a <a href="https://palletsprojects.com/p/flask/">Flask</a>
+      by a <a href="https://www.docker.com/">Docker</a>.
+    </footer>
   </div>
 </template>
 
@@ -277,6 +279,7 @@ export default {
 </script>
 
 <style scoped lang="css">
+@import url(https://fonts.google.com/specimen/Jura?subset=greek#glyphs);
   .fade-enter-active, .fade-leave-active{
     transition: opacity 1s;
   }
@@ -286,32 +289,66 @@ export default {
   }
 
   .table{
+    border-radius: 10px;
     width:90%;
     margin: auto;
     text-align: center;
     border-style:dashed;
     border-width: 2px;
   }
-  .tablehead{
-    border-bottom-style: double;
+  th{
+    border-bottom-style: dashed;
     border-bottom-width: 1px;
   }
   .container{
+    border-radius: 25px;
     margin: auto;
     text-align: center;
     width: 80%;
     border-style:groove;
     border-width: 2px;
   }
+  #guess{
+    height:auto;
+  }
+  #gameStats{
+    font-size:40px;
+  }
+  #gameButton{
+    font-size: 30px;
+  }
+  #formButton{
+    font-size: 20px;
+  }
+  #gameForm{
+    width:50%;
+    font-size: 20px;
+  }
+  .alert{
+    align-self: center;
+    text-align: center;
+  }
   .outside{
     margin:30px;
+    font-family: 'Jura';
+  }
+  button{
+    font-family: 'Jura';
   }
   .header{
-    background:white;
+    text-align: center;
+    font-size: 18px;
+    background:rgba(151, 151, 151, 0.719);
     border-bottom: 1px solid #eeeeee;
     position:fixed;
     left:0;
     top:0;
+    width:100vw;
+    z-index:200;
+    height:auto;
+  }
+  footer{
+    text-align: center;
     width:100vw;
     z-index:200;
     height:auto;

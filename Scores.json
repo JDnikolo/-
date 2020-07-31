@@ -1,0 +1,15 @@
+{"_id":{"$oid":"5f1eccbb68a1bee083491aae"},"condition":"Cancer","username":"Giannis","result":50}
+{"_id":{"$oid":"5f1ee13668a1bee083491f67"},"condition":"Cancer","username":"JD","result":51}
+{"_id":{"$oid":"5f1ee38d68a1bee083492004"},"condition":"Cancer","username":"Agent","result":47}
+{"_id":{"$oid":"5f1ee40a68a1bee08349202b"},"condition":"Cancer","username":"Mike","result":90}
+{"_id":{"$oid":"5f21f1d6e06be32f10704de1"},"condition":"Cancer","username":"Nikolo","result":5.152671755725191}
+{"_id":{"$oid":"5f21fef1e06be32f10704de2"},"condition":"Obesity","username":"Nikolo","result":25.687610396164523}
+{"_id":{"$oid":"5f22aae19c95ddea9da203a0"},"condition":"Cancer","username":"Something","result":5.152671755725191}
+{"_id":{"$oid":"5f22ae1c9c95ddea9da203a1"},"condition":"Obesity","username":"Something","result":22.558667676003026}
+{"_id":{"$oid":"5f22aeca9c95ddea9da203a2"},"condition":"Obesity","username":"Something","result":25.510976532929597}
+{"_id":{"$oid":"5f22afad9c95ddea9da203a3"},"condition":"Ulcer","username":"Something","result":11.428571428571429}
+{"_id":{"$oid":"5f22b0099c95ddea9da203a4"},"condition":"Ulcer","username":"Something","result":8.571428571428571}
+{"_id":{"$oid":"5f22b0449c95ddea9da203a5"},"condition":"Ulcer","username":"Something","result":11.428571428571429}
+{"_id":{"$oid":"5f22b2189c95ddea9da203a7"},"condition":"Cancer","username":"MariahC","result":5.152671755725191}
+{"_id":{"$oid":"5f22b3699c95ddea9da203a8"},"condition":"Breast Cancer","username":"MariahC","result":9.049347855318004}
+{"_id":{"$oid":"5f22c9d1927a29297964b880"},"condition":"Racism","username":"Nikolo","result":100}

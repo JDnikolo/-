@@ -1,0 +1,4 @@
+{"_id":{"$oid":"5f1eaccf59182551ab70ff4c"},"username":"Giannis","password":"somethingLong","created":"2020-07-27T10:30:39Z","modified":"2020-07-27T10:32:57Z","lastLogin":"2020-07-27T10:31:50Z"}
+{"_id":{"$oid":"5f1eb0a3edb926469e325b59"},"username":"Nikolo","password":"somethingLong","created":"2020-07-27T10:46:59Z","modified":"2020-07-30T12:57:15Z","lastLogin":"2020-07-30T12:57:07Z"}
+{"_id":{"$oid":"5f22aaae9c95ddea9da2039f"},"username":"Something","password":"regaergaier","created":"2020-07-30T11:10:38Z","modified":"2020-07-30T11:10:38Z"}
+{"_id":{"$oid":"5f22b2139c95ddea9da203a6"},"username":"MariahC","password":"aergaergerg","created":"2020-07-30T11:42:11Z","modified":"2020-07-30T11:42:11Z"}
