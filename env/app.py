@@ -158,7 +158,14 @@ def scores():
         mongo.db.Scores.insert_one(data)
         return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
-
+#Autocomplete support endpoint. Returns all studies that contain the 
+#substring term.
+@app.route('/autocomplete')
+def autocomplete():
+    term=request.args.get('term')
+    if term!=None:
+        conditions=list(mongo.db.Studies.aggregate(([{"$match": {"condition": {"$regex": ".*"+term+".*"}}}, {"$group":{"_id":"$condition"}},{"$project":{"_id":0,"condition":"$_id"}}])))
+        return json.dumps(conditions, default=str)
 
 if __name__ == '__main__':
     app.run()

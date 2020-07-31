@@ -20,7 +20,8 @@ MongoDB Setup:
 docker run -d --name base -v /data/db -p 27017:27017 mongo
 
 db import/export:
-access mongo docker: docker exec -it base /bin/bash
+access mongo docker:
+docker exec -it base /bin/bash
 mongoimport -d local -c Studies /tmp/Studies.json
 mongoexport -d local -c Studies --out=/tmp/Studies.json
 copy from container to host:

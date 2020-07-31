@@ -1,4 +1,4 @@
-<template>
+<template class='outside'>
   <div id="app" class='outside'>
     <header id="login" class="header">
       <span>{{loginMessage}}</span>
@@ -10,12 +10,15 @@
         <button @click=showPass>Change Password</button>
       </span>
     </header>
+    <div class="container" id="scores">
+      <scoreboard />
+    </div>
     <div class="container">
       <form v-on:submit.prevent=find>
         <label>Search for a condition:</label>
         <br />
-        <input id='gameForm' v-bind:value="condition"
-  v-on:input="condition = $event.target.value" type="text" />
+        <input id='gameForm' v-model="condition"
+        display-attribute='condition' autocomplete="off" type="text"/>
         <button id='formButton' type="button" @click=random>Random Condition</button>
         <br />
         <button id='formButton' type="submit" v-on:click=find>Show top 100</button>
@@ -26,7 +29,7 @@
       <table class="table" v-show='showResults' id="scores">
         <thead>
           <th>Drug Name</th>
-          <th>Studies</th>
+          <th># of Studies</th>
         </thead>
         <tbody>
         <tr v-for="result in results" :key="result">
@@ -38,15 +41,17 @@
     </div>
     <div id='game' v-show="showGame">
       <form id="guess" class="container" v-on:submit.prevent=reveal>
-        <label>Your guess:</label>
+        <label class="label">Your guess:</label>
         <br />
         <input id='gameForm' type="text" v:bind:value="guess"
-        v-on:input="guess = $event.target.value" />
+        v-on:input="guess = $event.target.value" autocomplete="off"/>
         <button id="gameButton" type="submit">Take the guess</button>
         <button id="gameButton" type='button' v-on:click=closeGame>I give up!</button>
         <br />
       </form>
-      <div class='alert'> {{gameMessage}} </div>
+      <transition name="fade">
+        <div class='alert' v-show="gameMessage != ''"> {{gameMessage}} </div>
+      </transition>
       <div id="gameStats" class="container">
         <span>Found: {{this.found}} - Remaining: {{this.total - this.found}}</span>
         <br />
@@ -86,13 +91,20 @@
     </div>
     <loginModal v-show="isLoginVisible" @close="hideLogin" />
     <changePasswordModal v-show='isPassVisible' @close=hidePass />
-    <footer>Font:
+    <footer>Fonts:
       <a href="https://fonts.google.com/specimen/Jura?subset=greek#standard-styles">Jura</a>
       , Designed by Daniel Johnson, Cyreal
       <br />
-      <a href="https://vuejs.org/">Vue'd</a>
-      through a <a href="https://palletsprojects.com/p/flask/">Flask</a>
-      by a <a href="https://www.docker.com/">Docker</a>.
+      <span class="Lato">
+        <a href='https://fonts.google.com/specimen/Lato#standard-styles'>Lato</a>
+        , Designed by Łukasz Dziedzic
+      </span>
+      <br />
+      <span class="italic Lato">
+        <a href="https://vuejs.org/">Vue</a>
+        'd through a <a href="https://palletsprojects.com/p/flask/">Flask</a>
+        by a <a href="https://www.docker.com/">Docker.</a>
+      </span>
     </footer>
   </div>
 </template>
@@ -101,11 +113,17 @@
 import axios from 'axios';
 import loginModal from './loginModal.vue';
 import changePasswordModal from './changePasswordModal.vue';
+import scoreboard from './scoreboard.vue';
+// import VueSimpleSuggest from 'vue-simple-suggest';
 
 export default {
   name: 'main_page',
   components: {
-    loginModal, changePasswordModal,
+    loginModal, changePasswordModal, scoreboard,
+  },
+  metaInfo: {
+    title: 'Δες τι πήραν | Βρες τι πήραν',
+    titleTemplate: '%s',
   },
   data() {
     return {
@@ -132,6 +150,7 @@ export default {
       this.showEnd = false;
       this.showGame = false; // TODO: check if a game is being interrupted.
       this.reset();
+      this.condition = this.condition.charAt(0).toUpperCase() + this.condition.slice(1);
       const path = `http://localhost:5000/condition?condition=${this.condition}`;
       axios.get(path).then((res) => {
         this.results = res.data.slice(0, 100);
@@ -266,6 +285,11 @@ export default {
         }
       });
     },
+    getAutocomplete() {
+      const term = this.condition;
+      const path = `http://localhost:5000/autocomplete?term=${term}`;
+      return axios.get(path).then((res) => res.data);
+    },
   },
   created() {
     this.showResults = false;
@@ -280,6 +304,7 @@ export default {
 
 <style scoped lang="css">
 @import url(https://fonts.google.com/specimen/Jura?subset=greek#glyphs);
+@import url(https://fonts.google.com/specimen/Lato#standard-styles);
   .fade-enter-active, .fade-leave-active{
     transition: opacity 1s;
   }
@@ -287,7 +312,13 @@ export default {
     opacity: 0;
     transform: translateY(30px);
   }
-
+  #scores{
+    border-radius:3px;
+    font-size: 20px;
+  }
+  #results{
+    margin:5px;
+  }
   .table{
     border-radius: 10px;
     width:90%;
@@ -295,12 +326,14 @@ export default {
     text-align: center;
     border-style:dashed;
     border-width: 2px;
+    border-collapse: collapse;
   }
   th{
     border-bottom-style: dashed;
     border-bottom-width: 1px;
   }
   .container{
+    background-color: rgba(27, 62, 160, 0.144);
     border-radius: 25px;
     margin: auto;
     text-align: center;
@@ -323,34 +356,77 @@ export default {
   #gameForm{
     width:50%;
     font-size: 20px;
+    text-align: center;
   }
   .alert{
     align-self: center;
     text-align: center;
   }
+  body{
+    background-color: rgb(33, 37, 41);;
+  }
   .outside{
-    margin:30px;
+    margin-top:40px;
     font-family: 'Jura';
+    color:white;
   }
   button{
-    font-family: 'Jura';
+    font-family: 'Lato', sans-serif;
+    background-color:rgb(42, 99, 255);
+    color:white;
+    border-color:rgb(42, 99, 255);
+    padding:5px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin: 2px;
+    margin-left:4px;
+    margin-right:4px;
+    align-content: center;
+    font-weight: bold;
+  }
+  .italic{
+    font-style:italic;
+  }
+  .Lato{
+    font-family: 'Lato', sans-serif;
+  }
+  .alert{
+    position: absolute;
+    top:30%;
+    left:2%;
+    border-style:solid;
+    background-color: rgb(42, 99, 255);
+    border-radius: 5px;
+    border-color: rgb(42, 99, 255);
+    border-width:  2px;
   }
   .header{
-    text-align: center;
     font-size: 18px;
-    background:rgba(151, 151, 151, 0.719);
+    color:white;
+    background:rgb(33, 37, 41);
     border-bottom: 1px solid #eeeeee;
     position:fixed;
     left:0;
     top:0;
-    width:100vw;
-    z-index:200;
+    width:100%;
     height:auto;
   }
+  tr{
+    border-bottom: 1px dotted;
+    font-size:23px;
+  }
+  label{
+    font-size: 30px;
+    font-weight: bold;
+  }
   footer{
+    border-top:1px solid white;
     text-align: center;
-    width:100vw;
-    z-index:200;
+    left:0;
+    width:100%;
     height:auto;
+  }
+  a{
+    color: orange;
   }
 </style>

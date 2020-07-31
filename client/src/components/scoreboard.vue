@@ -4,28 +4,24 @@
     Scores:
     </div>
     <div>
-    <table id='scores'>
-      <tr>
-        <th>Name</th>
-        <th>Condition</th>
-        <th>Score</th>
-      </tr>
-      <tr>
-        <tr v-for="scores in something" :key="scores">
-              <td>{{ scores.username }}</td>
-              <td>{{ scores.condition }}</td>
-              <td>{{ scores.result.toFixed(2) }}</td>
-      </tr>
-    </table>
+      <marquee-text duration="120">
+        <span v-for="scores in something" :key="scores">
+          {{ scores.username }}, {{ scores.condition }}: {{ scores.result.toFixed(2) }}% ||
+           </span>
+      </marquee-text>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import MarqueeText from 'vue-marquee-text-component';
 
 export default {
-  name: 'page',
+  name: 'scoreboard',
+  components: {
+    MarqueeText,
+  },
   data() {
     return {
       something: '!',
@@ -47,7 +43,7 @@ export default {
   },
   created() {
     this.getScores();
-    this.timer = setInterval(this.getScores, 30000);
+    this.timer = setInterval(this.getScores, 10000);
   },
 };
 </script>

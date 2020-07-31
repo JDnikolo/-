@@ -39,7 +39,7 @@
         </section>
        <footer class="modal-footer">
         <button type="button" class="btn-green" @click="close">
-            Close me!
+            Close
         </button>
       </footer>
     </div>
@@ -107,7 +107,7 @@ export default {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -129,8 +129,9 @@ export default {
 
   .modal-header {
     border-bottom: 1px solid #eeeeee;
-    color: #4AAE9B;
+    color: rgb(42, 99, 255);
     justify-content: space-between;
+    font-weight:bold;
   }
 
   .modal-footer {
@@ -139,14 +140,16 @@ export default {
   }
 
   .modal-body {
+    color:black;
     position: relative;
     padding: 20px 10px;
   }
 
   .btn-green {
     color: white;
-    background: #4AAE9B;
-    border: 1px solid #4AAE9B;
+    background: rgb(42, 99, 255);;
+    border: 1px solid rgb(42, 99, 255);
+    border-radius: 5px;
     border-radius: 2px;
   }
 </style>

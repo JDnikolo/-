@@ -8,7 +8,7 @@ Vue.use(VueRouter);
 const routes = [
 
   {
-    path: '/page',
+    path: '/',
     name: 'page',
     component: core,
   },
