@@ -32,7 +32,7 @@
           <th># of Studies</th>
         </thead>
         <tbody>
-        <tr v-for="result in results" :key="result">
+        <tr v-for="(result,index) in results" :key="index">
           <td>{{ result._id }}</td>
           <td>{{ result.count }}</td>
         </tr>
@@ -231,7 +231,10 @@ export default {
       this.showEnd = true;
     },
     logScore() {
-      if (!this.scorePosted) {
+      if (((this.found / this.total) * 100).toFixed(2) === '0.00') {
+        this.gameMessage = 'You can do better than this! Try again!';
+        setTimeout(() => { this.gameMessage = ''; }, 3000);
+      } else if (!this.scorePosted) {
         if (this.isLoggedin) {
           const payload = JSON.parse(`{"condition": "${this.condition}", "username": "${localStorage.user}", "result": ${(this.found / this.total) * 100}}`);
           const path = 'http://localhost:5000/scores';
@@ -249,12 +252,13 @@ export default {
         }
       } else {
         this.gameMessage = "You've already submitted this score. Time for a new one!";
-        setTimeout(() => { this.message = ''; }, 2000);
+        setTimeout(() => { this.gameMessage = ''; }, 3000);
       }
     },
+    // general message manipulation method.
     showGameMessage(something) {
-      const successMessages = ['Good guess!', "That's it!", 'Well done!'];
-      const failureMessages = ["Nope, that's not it.", 'Try again!'];
+      const successMessages = ['Good guess!', "That's it!", 'Well done!', 'Great'];
+      const failureMessages = ["Nope, that's not it.", 'Try again!', 'Nope'];
       if (something.type === 'scoring') {
         if (something.result === 'success') {
           this.gameMessage = 'Score posted successfully!';

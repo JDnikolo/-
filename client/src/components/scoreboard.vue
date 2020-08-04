@@ -4,8 +4,8 @@
     Scores:
     </div>
     <div>
-      <marquee-text duration="120">
-        <span v-for="scores in something" :key="scores">
+      <marquee-text :duration='120'>
+        <span v-for="(scores,index) in something" :key="index">
           {{ scores.username }}, {{ scores.condition }}: {{ scores.result.toFixed(2) }}% ||
            </span>
       </marquee-text>
@@ -24,7 +24,8 @@ export default {
   },
   data() {
     return {
-      something: '!',
+      something: '',
+      time: 120,
     };
   },
   methods: {
