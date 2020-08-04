@@ -9,10 +9,13 @@ from pprint import pprint
 client=MongoClient('localhost',27017)
 db=client.local
 
-#directories
+#target directory
 folders="E:\\Giannis Nikolopoulos\\Ergasia2"
 
-
+#Accesses all files in subfolders of the target directory, parses them 
+#via ElementTree and adds relevant data to a collection in the database.
+#WARNING: This doesn't erase any existing documents in the collection.
+#Use it on an empty collection to avoid data duplication.
 def populate():
     for subfolders in os.listdir(folders):
         for files in os.listdir(folders+'\\'+subfolders):
