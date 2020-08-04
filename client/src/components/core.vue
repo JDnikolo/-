@@ -249,6 +249,7 @@ export default {
         }
       } else {
         this.gameMessage = "You've already submitted this score. Time for a new one!";
+        setTimeout(() => { this.message = ''; }, 2000);
       }
     },
     showGameMessage(something) {
