@@ -16,6 +16,8 @@ http://147.102.19.19/wordpress/%ce%bf%ce%b4%ce%b7%ce%b3%ce%af%ce%b5%cf%82-%cf%83
 
 **(Αν δεν εμφανίζεται σωστά η παρουσίαση, μπορείτε να τη δείτε στο ομώνυμο PDF ή εδώ: https://docs.google.com/presentation/d/1LHVwWmRfqyo-ugiqUQymu_Kjcvj_gAjgiY0Mm7-32UA/edit?usp=sharing)**   
 
+Βίντεο: https://youtu.be/HFmYJTbjpX4   
+
 ## Deployment
 *Requirements*:
 1. npm (version 6.13.4)
