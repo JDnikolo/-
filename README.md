@@ -14,10 +14,6 @@
 
 http://147.102.19.19/wordpress/%ce%bf%ce%b4%ce%b7%ce%b3%ce%af%ce%b5%cf%82-%cf%83%cf%85%ce%bc%ce%bc%ce%b5%cf%84%ce%bf%cf%87%ce%ae%cf%82/
 
--[ ] CSS   
--[x] Installation/Deployment   
--[ ] Presentation   
--[ ] Video   
 
 
 ## Deployment
@@ -39,7 +35,14 @@ Access the container and import the collection to the database:
     docker exec -it base /bin/bash   
     mongoimport -d local -c Studies /tmp/Studies.json
 ~~~
-*Optional*: Import the Accounts and Scores collections from their respective JSON files.   
+*Optional*: Import the Accounts and Scores collections from their respective JSON files:
+~~~
+    docker cp  ./Accounts.json base:/tmp/Accounts.json
+    docker cp  ./Scores.json base:/tmp/Scores.json
+    docker exec -it base /bin/bash
+    mongoimport -d local -c Accounts /tmp/Accounts.json
+    mongoimport -d local -c Scores /tmp/Scores.json
+~~~
 
 Start the mongoDB container:
 ~~~
@@ -50,7 +53,7 @@ Activate the virtual environment and run the Flask server file:
     source ./env/Scripts/activate   
     python ./env/app.py   
 ~~~
-*Note"*: make sure you run the file using python 3.\*.   
+*Note*: make sure you run the file using python 3.\*.   
 
 Activate the vue client:   
 ~~~
