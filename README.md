@@ -59,6 +59,9 @@ Activate the virtual environment and run the Flask server file:
 
 Activate the vue client:   
 ~~~
+    cd ./client
+    npm install
     npm run serve   
 ~~~
+*Note*: if errors occur on this step, make sure your npm version is up to date.   
 Access the app on http://localhost/8080 .   
